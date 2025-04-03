@@ -3,12 +3,150 @@
  */
 package org.example;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import javax.net.ssl.HttpsURLConnection;
+
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
+
+  public String getGreeting() {
+    return "Hello World!";
+  }
+
+  public static void main(String[] args) throws IOException {
+    final InetSocketAddress address = new InetSocketAddress(8080);
+    final HttpServer server = HttpServer.create(address, 0);
+
+    server.createContext("/trigger", new TriggerHandler());
+
+    server.setExecutor(null);
+    server.start();
+
+    System.out.println("Main: Thread: " + Thread.currentThread().getName());
+    System.out.println("Server running at localhost:8080");
+  }
+
+  static class TriggerHandler implements HttpHandler {
+
+    @Override
+    public void handle(HttpExchange exchange) throws IOException {
+      System.out.println("Thread: " + Thread.currentThread().getName());
+
+      try (final InputStream inputStream = exchange.getRequestBody()) {
+
+        final String payload = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+
+        new Thread(() -> {
+          try {
+            handleWebhookAsync(payload);
+          } catch (URISyntaxException | IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+          }
+        }).start();
+
+        final String responseMessage = "Webhook processed successfully";
+        exchange.sendResponseHeaders(200, responseMessage.length());
+        final OutputStream outputStream = exchange.getResponseBody();
+
+        outputStream.write(responseMessage.getBytes());
+        outputStream.close();
+      }
     }
 
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+    private void handleWebhookAsync(String payload)
+        throws IOException, URISyntaxException, InterruptedException {
+      System.out.println("Thread: " + Thread.currentThread().getName());
+
+      final ObjectMapper mapper = new ObjectMapper();
+      final JsonNode root = mapper.readTree(payload);
+
+      final String repositoryName = root.path("repository").path("full_name").asText();
+      final String commitHash = root.path("after").asText();
+      final String apiUrl =
+          "https://api.github.com/repos/" + repositoryName + "/statuses/" + commitHash;
+      final String ref = root.path("ref").asText();
+      final String branch = ref.replace("refs/heads/", "");
+      final String repoUrl = root.path("repository").path("clone_url").asText();
+      final String projectName = root.path("name").asText();
+
+      final File workingDir = new File("/tmp/pipeline");
+      final File repoDir = new File(workingDir, projectName);
+      workingDir.mkdirs();
+      repoDir.mkdirs();
+
+      System.out.println("Api URL: " + apiUrl);
+
+
+
+      final URL url = new URI(apiUrl).toURL();
+      final HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+      connection.setRequestMethod("POST");
+//      connection.setRequestProperty("Authorization", "token " + token);
+      connection.setRequestProperty("Accept", "application/vnd.github.v3+json");
+      connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+      connection.setDoOutput(true);
+
+      final String state = "success";
+      final String description = "Successfully passed the pipeline";
+
+      final String jsonBody = String.format("""
+          {
+            "state": "%s",
+            "context": "remote-build-check",
+            "description": "%s"
+          }
+          """, state, description);
+
+      System.out.println("Sending payload: \n" + jsonBody);
+
+      final List<String> cloneRepoCmd =
+          new ArrayList<>(List.of("git", "clone", "--depth=1", "--branch=" + branch, repoUrl,
+              repoDir.getAbsolutePath()));
+
+      System.out.println("Cloning repository: " + repoUrl);
+      if (CommandRunner.runCommand(cloneRepoCmd, workingDir) != 0) {
+        System.out.println("Branch: " + branch);
+        System.out.println("Repo url: " + repoUrl);
+        System.out.println("Repo dir: " + repoDir);
+
+        System.out.println("ERROR:: Failed to clone repository for cloneRepoCmd: " + cloneRepoCmd);
+        return;
+      }
+      System.out.println("Successfully cloned the repository.");
+
+      final List<String> buildCmd = new ArrayList<>(List.of("./gradlew", "build"));
+
+      System.out.println("Running gradle build...");
+      if (CommandRunner.runCommand(buildCmd, repoDir) != 0) {
+        System.out.println("ERROR:: Failed to do a Gradle build.");
+        return;
+      }
+      System.out.println("Gradle build passed successfully.");
+
+      try (final OutputStream outputStream = connection.getOutputStream()) {
+        outputStream.write(jsonBody.getBytes(StandardCharsets.UTF_8));
+      }
+
+      final int responseCode = connection.getResponseCode();
+      final String response = connection.getResponseMessage();
+      System.out.println("Github response [" + responseCode + "]: " + response);
     }
+  }
+
 }
