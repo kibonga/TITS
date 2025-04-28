@@ -3,12 +3,35 @@
  */
 package org.example;
 
-public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
+import com.sun.net.httpserver.HttpServer;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
-    }
+public class App {
+
+  private static final Logger logger = LoggerFactory.getLogger(App.class);
+
+  public static void main(String[] args) throws IOException {
+    logger.info("Starting the application...");
+
+    final HttpServer httpServer = createHttpServer();
+
+    final var host = httpServer.getAddress().getHostName();
+    final var port = httpServer.getAddress().getPort();
+
+    httpServer.createContext("/trigger", new WebhookHandler());
+    httpServer.setExecutor(null);
+
+    logger.info("Starting HTTP server with host: {} and port: {}", host, port);
+    httpServer.start();
+
+    ThreadUtils.logThreadInfo();
+    logger.info("HTTP server started...");
+  }
+
+  private static HttpServer createHttpServer() throws IOException {
+    return HttpServer.create(new InetSocketAddress("localhost", 8080), 0);
+  }
 }
