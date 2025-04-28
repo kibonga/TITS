@@ -2,8 +2,7 @@ root:
   definitions:
     branch-build-master: &build-master |-
       echo "Branch - Building master"
-      ./gradlew  \
-      build
+      ./gradlew build
       echo "Branch - Built master successfully"
 
     branch-build-uat: &build-uat |-

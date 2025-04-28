@@ -8,7 +8,8 @@ import java.util.List;
 
 public class CommandRunner {
 
-  private CommandRunner() {}
+  private CommandRunner() {
+  }
 
   public static int runCommand(List<String> command, File workingDir)
       throws IOException, InterruptedException {
