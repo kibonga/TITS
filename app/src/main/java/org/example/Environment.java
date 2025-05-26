@@ -3,13 +3,15 @@ package org.example;
 import io.github.cdimascio.dotenv.Dotenv;
 
 public final class Environment {
-  private static final Dotenv dotenv = Dotenv.configure()
-      .filename(".env")
-      .load();
 
-  private Environment() {}
+    private static final Dotenv dotenv = Dotenv.configure()
+        .filename(".env")
+        .load();
 
-  public static String getGithubToken() {
-    return dotenv.get("GITHUB_TOKEN");
-  }
+    private Environment() {
+    }
+
+    public static String getGithubToken() {
+        return dotenv.get("GITHUB_TOKEN");
+    }
 }

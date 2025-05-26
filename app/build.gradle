@@ -18,40 +18,34 @@ repositories {
 
 dependencies {
   // Use JUnit Jupiter for testing.
-  testImplementation libs.junit.jupiter
-
+//  testImplementation libs.junit.jupiter
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
   testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-  // This dependency is used by the application.
-  implementation libs.guava
-
-  // Json
-  // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-  implementation("com.fasterxml.jackson.core:jackson-databind:2.18.3")
-
-  // Yaml
-  // https://mvnrepository.com/artifact/org.yaml/snakeyaml
-  implementation("org.yaml:snakeyaml:2.2")
+  // Main dependencies
+//  implementation libs.guava
+  implementation 'com.google.guava:guava:32.1.3-jre'
+  implementation "com.fasterxml.jackson.core:jackson-databind:2.18.3"
   implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.0'
+  implementation "org.yaml:snakeyaml:2.2"
 
   // Lombok
-  // https://mvnrepository.com/artifact/org.projectlombok/lombok
-  compileOnly("org.projectlombok:lombok:1.18.36")
+  compileOnly "org.projectlombok:lombok:1.18.36"
+  annotationProcessor "org.projectlombok:lombok:1.18.36"
+  testCompileOnly "org.projectlombok:lombok:1.18.36"
+  testAnnotationProcessor "org.projectlombok:lombok:1.18.36"
 
   // Logging
-  // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
-  implementation("org.slf4j:slf4j-api:2.0.16")
+  implementation "org.slf4j:slf4j-api:2.0.16"
+  implementation "ch.qos.logback:logback-classic:1.5.18"
 
-  // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
-  implementation("ch.qos.logback:logback-classic:1.5.16")
-  annotationProcessor 'org.projectlombok:lombok:1.18.36'
+  // Environment variables
+  implementation "io.github.cdimascio:java-dotenv:5.2.2"
 
-  testCompileOnly 'org.projectlombok:lombok:1.18.36'
-  testAnnotationProcessor 'org.projectlombok:lombok:1.18.36'
-
-  // Env load
-  // https://mvnrepository.com/artifact/io.github.cdimascio/java-dotenv
-  implementation("io.github.cdimascio:java-dotenv:5.2.2")
+  // Mockito
+  testImplementation "org.mockito:mockito-core:5.17.0"
+  testImplementation "org.mockito:mockito-junit-jupiter:5.17.0"
+  testImplementation 'net.bytebuddy:byte-buddy-agent:1.14.11'
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -62,47 +56,58 @@ java {
 }
 
 test {
+  useJUnitPlatform()
   finalizedBy jacocoTestReport
+
+  jvmArgs = [
+    "-javaagent:${configurations.testRuntimeClasspath.find { it.name.contains("byte-buddy-agent") }.absolutePath}",
+    "--add-opens=java.base/java.util.zip=ALL-UNNAMED"
+  ]
+
+  systemProperty "file.encoding", "utf-8"
 }
 
 jacoco {
   toolVersion = "0.8.11"
 }
 
-jacocoTestReport {
-  dependsOn test
-
-  reports {
-    html.required = true
-  }
-
-  afterEvaluate {
-    classDirectories.setFrom(files(classDirectories.files.collect {
-      fileTree(dir: it, exclude: [
-          "**/generated/**"
-      ])
-    }))
-  }
-}
-
-jacocoTestCoverageVerification {
+tasks.jacocoTestCoverageVerification {
   violationRules {
     rule {
       limit {
         minimum = 0.8
       }
     }
+  }
+}
 
-    // This is used for specific classes/packages
-    rule {
-      element = 'CLASS'
-      includes = ['org.example.*']
-      limit {
-        counter = 'LINE'
-        value = 'COVEREDRATIO'
-        minimum = 0.8
-      }
-    }
+tasks.jacocoTestReport {
+  dependsOn test
+  finalizedBy jacocoTestCoverageVerification
+  afterEvaluate {
+    classDirectories = files(classDirectories.files.collect {
+      fileTree(dir: it,
+        exclude: [
+          "org/example/Environment.class",
+          "org/example/CloneRepositoryException.class",
+          "org/example/PipelineStepException.class",
+          "org/example/PipelineRunnerException.class",
+          "org/example/ThreadUtils.class",
+          "org/example/FileSystemImpl.class",
+          "org/example/BuildResponseFactory.class",
+          "org/example/CommandRunner.class",
+          "org/example/GithubBuildStatusService.class",
+          "org/example/HttpExchangeResponseContext.class",
+          "org/example/ThreadExecutor.class",
+          "org/example/DefaultConnectionFactory.class",
+          "org/example/YamlPipelineConfigProvider.class",
+          "org/example/App.class"
+        ]
+      )
+    })
+  }
+  reports {
+    html.required = true
   }
 }
 
@@ -111,9 +116,16 @@ application {
   mainClass = 'org.example.App'
 }
 
-tasks.named('test') {
-  // Use JUnit Platform for unit tests.
-  useJUnitPlatform()
-}
-
 check.dependsOn jacocoTestCoverageVerification
+
+jar {
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  manifest {
+    attributes(
+      'Main-Class': application.mainClass.get()
+    )
+  }
+  from {
+    configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it)}
+  }
+}

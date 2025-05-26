@@ -3,35 +3,57 @@
  */
 package org.example;
 
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class App {
 
-  private static final Logger logger = LoggerFactory.getLogger(App.class);
+    private static final String ALL_HOSTS = "0.0.0.0";
+    private static final String DEFAULT_PORT = "8080";
 
-  public static void main(String[] args) throws IOException {
-    logger.info("Starting the application...");
+    private static final Logger logger = LoggerFactory.getLogger(App.class);
+    private static final HttpHandlerFactory<WebhookHandler>
+        WEBHOOK_HTTP_HANDLER_FACTORY =
+        new WebhookHttpHandlerFactory();
 
-    final HttpServer httpServer = createHttpServer();
+    public static void main(String[] args) throws IOException {
+        logger.info("Starting the application...");
 
-    final var host = httpServer.getAddress().getHostName();
-    final var port = httpServer.getAddress().getPort();
+        final HttpServer httpServer = createHttpServer();
 
-    httpServer.createContext("/trigger", new WebhookHandler());
-    httpServer.setExecutor(null);
+        final var host = httpServer.getAddress().getHostName();
+        final var port = httpServer.getAddress().getPort();
 
-    logger.info("Starting HTTP server with host: {} and port: {}", host, port);
-    httpServer.start();
+        httpServer.createContext("/trigger",
+            WEBHOOK_HTTP_HANDLER_FACTORY.create());
+        httpServer.createContext("/tits", new HttpHandler() {
+            @Override
+            public void handle(HttpExchange exchange) throws IOException {
+                exchange.sendResponseHeaders(200, 0);
+                final var os = exchange.getResponseBody();
+                os.write("Hello from Tits!".getBytes(StandardCharsets.UTF_8));
+                os.close();
+            }
+        });
+        httpServer.setExecutor(null);
 
-    ThreadUtils.logThreadInfo();
-    logger.info("HTTP server started...");
-  }
+        logger.info("Starting HTTP server with host: {} and port: {}", host,
+            port);
+        httpServer.start();
 
-  private static HttpServer createHttpServer() throws IOException {
-    return HttpServer.create(new InetSocketAddress("localhost", 8080), 0);
-  }
+        ThreadUtils.logThreadInfo();
+        logger.info("HTTP server started...");
+    }
+
+    private static HttpServer createHttpServer() throws IOException {
+        final int port = Integer.parseInt(
+            System.getenv().getOrDefault("PORT", DEFAULT_PORT));
+        return HttpServer.create(new InetSocketAddress(ALL_HOSTS, port), 0);
+    }
 }

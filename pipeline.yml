@@ -17,6 +17,12 @@ root:
       build
       echo "PR - Built hotfix successfully"
 
+    pr-build-release: &build-release |-
+      echo "PR - Building hotfix"
+      ./gradlew  \
+      build
+      echo "PR - Built hotfix successfully"
+
     pr-build-default: &build |-
       echo "PR - Building PR"
       ./gradlew  \
@@ -45,8 +51,10 @@ root:
       hotfix:
         steps:
           - *build-hotfix
+      release:
+        steps:
+          - *build-release
       '**':
         steps:
           - *build
           - *print
-

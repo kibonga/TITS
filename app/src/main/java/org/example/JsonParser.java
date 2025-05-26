@@ -7,10 +7,13 @@ import java.io.IOException;
 
 public class JsonParser {
 
-  private JsonParser() {
-  }
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
-  public static JsonNode extract(HttpExchange httpExchange) throws IOException {
-    return new ObjectMapper().readTree(httpExchange.getRequestBody());
-  }
+    private JsonParser() {
+    }
+
+    public static JsonNode extract(HttpExchange httpExchange)
+        throws IOException {
+        return objectMapper.readTree(httpExchange.getRequestBody());
+    }
 }
