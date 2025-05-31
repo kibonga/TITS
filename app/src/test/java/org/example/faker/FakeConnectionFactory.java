@@ -3,7 +3,7 @@ package org.example.faker;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import javax.net.ssl.HttpsURLConnection;
-import org.example.http.ConnectionFactory;
+import org.example.common.http.connection.ConnectionFactory;
 
 public class FakeConnectionFactory implements ConnectionFactory {
 

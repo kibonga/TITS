@@ -9,10 +9,10 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
-import org.example.http.HttpHandlerFactory;
-import org.example.thread.ThreadUtils;
-import org.example.webhook.WebhookHandler;
-import org.example.webhook.WebhookHttpHandlerFactory;
+import org.example.handlers.HttpHandlerFactory;
+import org.example.common.thread.ThreadUtils;
+import org.example.handlers.webhook.WebhookHandler;
+import org.example.handlers.webhook.WebhookHttpHandlerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

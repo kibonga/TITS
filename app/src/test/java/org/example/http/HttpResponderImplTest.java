@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import org.example.faker.FakeHttpResponseContext;
+import org.example.common.http.responder.HttpResponderImpl;
 import org.junit.jupiter.api.Test;
 
 class HttpResponderImplTest {

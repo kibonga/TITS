@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.example.pipeline.PipelineStepExtractor;
+import org.example.pipeline.util.PipelineStepExtractor;
 
 public class YamlPipelineStepExtractor implements PipelineStepExtractor {
 

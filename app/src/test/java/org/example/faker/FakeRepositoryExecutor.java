@@ -4,8 +4,8 @@ import java.io.File;
 import java.nio.file.Path;
 import lombok.Setter;
 import org.example.exceptions.CloneRepositoryException;
-import org.example.repository.RepositoryExecutor;
-import org.example.repository.RepositoryInfo;
+import org.example.repository.executor.RepositoryExecutor;
+import org.example.repository.info.RepositoryInfo;
 
 @Setter
 public class FakeRepositoryExecutor implements RepositoryExecutor {

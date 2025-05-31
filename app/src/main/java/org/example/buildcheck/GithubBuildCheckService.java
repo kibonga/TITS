@@ -4,11 +4,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import javax.net.ssl.HttpsURLConnection;
-import org.example.http.ConnectionFactory;
+import org.example.common.http.connection.ConnectionFactory;
 import org.example.common.env.Environment;
 
 public class GithubBuildCheckService implements BuildCheckService {
 
+    private static final String GITHUB_TOKEN = "GITHUB_TOKEN";
     private final ConnectionFactory connectionFactory;
 
     public GithubBuildCheckService(ConnectionFactory connectionFactory) {
@@ -28,7 +29,7 @@ public class GithubBuildCheckService implements BuildCheckService {
         connection.setRequestProperty("Content-Type",
             "application/json; charset=UTF-8");
         connection.setRequestProperty("Authorization",
-            String.format("Bearer %s", Environment.getGithubToken()));
+            String.format("Bearer %s", Environment.get(GITHUB_TOKEN)));
 
         return connection;
     }

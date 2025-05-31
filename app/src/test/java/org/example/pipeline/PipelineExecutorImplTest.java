@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import org.example.exceptions.PipelineRunnerException;
 import org.example.faker.FakeCommandExecutor;
+import org.example.pipeline.executor.PipelineExecutorImpl;
 import org.junit.jupiter.api.Test;
 
 class PipelineExecutorImplTest {

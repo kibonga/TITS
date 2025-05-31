@@ -1,14 +1,14 @@
 package org.example.faker;
 
 import lombok.Setter;
-import org.example.common.handler.HandlerFactory;
-import org.example.pipeline.PipelineStepExtractor;
-import org.example.pullrequest.PullRequestHandler;
-import org.example.pullrequest.PullRequestHandlerImpl;
+import org.example.handlers.github.GithubEventHandler;
+import org.example.handlers.github.GithubEventHandlerFactory;
+import org.example.pipeline.util.PipelineStepExtractor;
+import org.example.handlers.github.pullrequest.PullRequestHandlerImpl;
 
 @Setter
 public class FakePullRequestHandlerFactory implements
-    HandlerFactory<PullRequestHandler> {
+    GithubEventHandlerFactory {
 
     private boolean shouldRepositoryExecutorThrowCloningException = false;
     private boolean shouldFileSystemThrowIOException = false;
@@ -18,7 +18,12 @@ public class FakePullRequestHandlerFactory implements
     private boolean shouldBuildCheckServiceThrowIOException = false;
 
     @Override
-    public PullRequestHandler create() {
+    public String getEventName() {
+        return "pull_request";
+    }
+
+    @Override
+    public GithubEventHandler create() {
         final FakeFileSystem fileSystem = new FakeFileSystem();
         final FakePipelineHandler pipelineHandler = new FakePipelineHandler();
         final FakeDirectoryService directoryService =

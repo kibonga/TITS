@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.example.exceptions.YmlLoadException;
-import org.example.pipeline.PipelineStepExtractor;
+import org.example.pipeline.util.PipelineStepExtractor;
 import org.junit.jupiter.api.Test;
 
 class YamlPipelineStepExtractorTest {

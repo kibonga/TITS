@@ -5,7 +5,7 @@ import java.net.URISyntaxException;
 import javax.net.ssl.HttpsURLConnection;
 import lombok.Setter;
 import org.example.buildcheck.BuildCheckService;
-import org.example.http.ConnectionFactory;
+import org.example.common.http.connection.ConnectionFactory;
 
 @Setter
 public class FakeBuildCheckService implements BuildCheckService {

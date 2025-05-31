@@ -10,6 +10,7 @@ import java.util.List;
 import org.example.exceptions.PipelineStepException;
 import org.example.faker.FakeFileSystem;
 import org.example.faker.FakePipelineExecutor;
+import org.example.handlers.pipeline.PipelineHandlerImpl;
 import org.junit.jupiter.api.Test;
 
 class PipelineHandlerImplTest {

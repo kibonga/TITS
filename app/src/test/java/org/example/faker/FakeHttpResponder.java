@@ -1,8 +1,8 @@
 package org.example.faker;
 
 import java.io.IOException;
-import org.example.http.HttpResponder;
-import org.example.http.HttpResponseContext;
+import org.example.common.http.responder.HttpResponder;
+import org.example.common.http.response.HttpResponseContext;
 
 public class FakeHttpResponder implements HttpResponder {
 

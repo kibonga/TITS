@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import lombok.Setter;
-import org.example.command.CommandExecutor;
+import org.example.common.command.CommandExecutor;
 
 @Setter
 public class FakeCommandExecutor implements CommandExecutor {

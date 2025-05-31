@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import org.example.faker.FakeHttpExchange;
 import org.example.faker.FakeHttpResponder;
+import org.example.common.http.responder.HttpExchangeResponderImpl;
 import org.junit.jupiter.api.Test;
 
 class HttpExchangeResponderImplTest {
