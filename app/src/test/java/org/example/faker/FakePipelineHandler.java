@@ -3,7 +3,7 @@ package org.example.faker;
 import java.nio.file.Path;
 import java.util.List;
 import lombok.Setter;
-import org.example.pipeline.PipelineHandler;
+import org.example.handlers.pipeline.PipelineHandler;
 import org.example.exceptions.PipelineStepException;
 
 @Setter

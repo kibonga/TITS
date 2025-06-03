@@ -2,7 +2,7 @@ package org.example.faker;
 
 import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
-import org.example.http.HttpExchangeResponder;
+import org.example.common.http.responder.HttpExchangeResponder;
 
 public class FakeHttpExchangeResponder implements HttpExchangeResponder {
 

@@ -2,5 +2,8 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/test/resources/small-tits" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/git-clone-dir" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/tst" vcs="Git" />
   </component>
 </project>

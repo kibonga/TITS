@@ -2,7 +2,7 @@ package org.example.faker;
 
 import java.io.File;
 import lombok.Setter;
-import org.example.pipeline.PipelineExecutor;
+import org.example.pipeline.executor.PipelineExecutor;
 import org.example.exceptions.PipelineRunnerException;
 
 @Setter

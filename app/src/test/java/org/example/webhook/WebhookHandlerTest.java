@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import org.example.faker.FakeHttpExchange;
 import org.example.faker.FakeWebhookHttpHandlerFactory;
+import org.example.handlers.webhook.WebhookHandler;
 import org.junit.jupiter.api.Test;
 
 class WebhookHandlerTest {

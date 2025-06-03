@@ -1,7 +1,11 @@
 package org.example.faker;
 
-import org.example.http.HttpHandlerFactory;
-import org.example.webhook.WebhookHandler;
+import java.util.ArrayList;
+import java.util.List;
+import org.example.handlers.github.GithubEventHandlerFactory;
+import org.example.handlers.github.GithubEventHandlerRegistry;
+import org.example.handlers.HttpHandlerFactory;
+import org.example.handlers.webhook.WebhookHandler;
 
 public class FakeWebhookHttpHandlerFactory implements
     HttpHandlerFactory<WebhookHandler> {
@@ -9,11 +13,15 @@ public class FakeWebhookHttpHandlerFactory implements
     @Override
     public WebhookHandler create() {
         return new WebhookHandler(
-            new FakePullRequestHandlerFactory().create(),
+            new GithubEventHandlerRegistry(githubEventHandlerFactoryList()),
             new FakeRepositoryInfoParser(),
             new FakeHttpHeaderExtractor(),
             new FakeHttpExchangeResponder(),
             new FakeThreadExecutor()
         );
+    }
+
+    private static List<GithubEventHandlerFactory> githubEventHandlerFactoryList() {
+        return new ArrayList<>(List.of(new FakePullRequestHandlerFactory()));
     }
 }

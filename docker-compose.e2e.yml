@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  git-server:
+    build:
+      context: .
+      dockerfile: git-server.Dockerfile
+    container_name: git-server
+    volumes:
+      - type: bind
+        source: /app/src/test/resources/small-tits-repo.git
+        target: /srv/git/small-tits.git
+        read_only: true
+    ports:
+      - "9418:9418"
+    networks:
+      - gitnet
+
+  runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: runner
+    depends_on:
+      - git-server
+    environment:
+      - REPO_URL=git://git-server/small-tits.git
+    volumes:
+      - /app/src/test/resources/webhook-payload.json:/app/payload.json
+    ports:
+      - "8080:8080"
+    networks:
+      - gitnet
+
+#  git-clone:
+#    image: alpine/git
+#    container_name: git-clone
+#    depends_on:
+#      - git-server
+#      - runner
+#    environment:
+#      - BRANCH=master
+#      - REPO_URL=git://git-server/git/small-tits.git
+#    entrypoint: sh
+#    command: -c "
+#      sleep 3 &&
+#      echo 'Cloning git://git-server/git/small-tits.git, branch master' &&
+#      git clone --depth=1 --single-branch --branch=master git://git-server/small-tits.git /git/clone &&
+#      ls -la /git/clone &&
+#      tail -f /dev/null"
+#    volumes:
+#      - ./git-clone-dir:/git/clone
+#    networks:
+#      - gitnet
+
+networks:
+  gitnet:

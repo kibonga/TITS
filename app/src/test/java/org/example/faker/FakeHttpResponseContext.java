@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import lombok.Setter;
-import org.example.http.HttpResponseContext;
+import org.example.common.http.response.HttpResponseContext;
 
 @Setter
 public class FakeHttpResponseContext implements HttpResponseContext {

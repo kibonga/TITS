@@ -9,10 +9,11 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
-import org.example.http.HttpHandlerFactory;
-import org.example.thread.ThreadUtils;
-import org.example.webhook.WebhookHandler;
-import org.example.webhook.WebhookHttpHandlerFactory;
+import org.example.common.env.Environment;
+import org.example.handlers.HttpHandlerFactory;
+import org.example.common.thread.ThreadUtils;
+import org.example.handlers.webhook.WebhookHandler;
+import org.example.handlers.webhook.WebhookHttpHandlerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +34,8 @@ public class App {
 
         final var host = httpServer.getAddress().getHostName();
         final var port = httpServer.getAddress().getPort();
+
+        logger.info("REPO URL: {}", System.getenv("REPO_URL"));
 
         httpServer.createContext("/trigger",
             WEBHOOK_HTTP_HANDLER_FACTORY.create());

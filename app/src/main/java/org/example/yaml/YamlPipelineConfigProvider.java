@@ -3,7 +3,7 @@ package org.example.yaml;
 import java.nio.file.Path;
 import java.util.Map;
 import org.example.exceptions.YmlLoadException;
-import org.example.pipeline.PipelineConfigProvider;
+import org.example.pipeline.util.PipelineConfigProvider;
 
 public class YamlPipelineConfigProvider implements PipelineConfigProvider {
 

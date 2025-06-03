@@ -14,6 +14,12 @@ public class JsonParser {
 
     public static JsonNode extract(HttpExchange httpExchange)
         throws IOException {
-        return objectMapper.readTree(httpExchange.getRequestBody());
+        try {
+            System.out.println("Extracting JSON object from http exhange: " + httpExchange.getRequestBody());
+            return objectMapper.readTree(httpExchange.getRequestBody());
+        } catch (IOException ex) {
+           System.out.println(ex.getMessage());
+        }
+        return null;
     }
 }

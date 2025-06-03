@@ -4,7 +4,7 @@ import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import lombok.Setter;
-import org.example.pipeline.PipelineConfigProvider;
+import org.example.pipeline.util.PipelineConfigProvider;
 import org.example.exceptions.YmlLoadException;
 
 @Setter

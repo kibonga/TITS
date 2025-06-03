@@ -11,7 +11,7 @@ public final class Environment {
     private Environment() {
     }
 
-    public static String getGithubToken() {
-        return dotenv.get("GITHUB_TOKEN");
+    public static String get(String key) {
+        return dotenv.get(key);
     }
 }

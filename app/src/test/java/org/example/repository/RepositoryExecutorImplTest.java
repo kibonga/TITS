@@ -15,6 +15,9 @@ import org.example.exceptions.CloneRepositoryException;
 import org.example.faker.FakeCommandExecutor;
 import org.example.faker.FakeDirectoryService;
 import org.example.faker.FakeRepositoryInfoParser;
+import org.example.repository.executor.RepositoryExecutor;
+import org.example.repository.executor.RepositoryExecutorImpl;
+import org.example.repository.info.RepositoryInfo;
 import org.junit.jupiter.api.Test;
 
 class RepositoryExecutorImplTest {

@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
+import org.example.repository.info.RepositoryInfo;
+import org.example.repository.info.RepositoryInfoParser;
+import org.example.repository.info.RepositoryInfoParserImpl;
 import org.junit.jupiter.api.Test;
 
 class RepositoryInfoParserImplTest {

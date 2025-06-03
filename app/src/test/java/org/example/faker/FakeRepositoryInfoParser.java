@@ -1,8 +1,8 @@
 package org.example.faker;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.example.repository.RepositoryInfo;
-import org.example.repository.RepositoryInfoParser;
+import org.example.repository.info.RepositoryInfo;
+import org.example.repository.info.RepositoryInfoParser;
 
 public class FakeRepositoryInfoParser implements RepositoryInfoParser {
 
