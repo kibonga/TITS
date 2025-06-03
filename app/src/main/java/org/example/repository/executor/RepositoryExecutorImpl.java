@@ -20,56 +20,42 @@ public class RepositoryExecutorImpl implements RepositoryExecutor {
     private final CommandExecutor commandExecutor;
     private final DirectoryService directoryService;
 
-    public RepositoryExecutorImpl(
-        CommandExecutor commandExecutor, DirectoryService directoryService
-    ) {
+    public RepositoryExecutorImpl(CommandExecutor commandExecutor,
+        DirectoryService directoryService) {
         this.commandExecutor = commandExecutor;
         this.directoryService = directoryService;
     }
 
     private static List<String> cloneCommand(String branch, String url) {
         return new ArrayList<>(
-            List.of(
-                "git",
-                "clone",
-                "--depth=1",
-                "--single-branch",
-                "--branch=" + branch,
-                url
-            )
-        );
+            List.of("git", "clone", "--depth=1", "--single-branch",
+                "--branch=" + branch, "--verbose", url));
     }
 
     @Override
-    public void clone(
-        RepositoryInfo repositoryInfo,
-        Path path,
-        File file
-    )
+    public void clone(RepositoryInfo repositoryInfo, Path path, File file)
         throws CloneRepositoryException {
         logger.info("Cloning repository: [{}] from branch [{}]",
-            repositoryInfo.repoUrl(),
-            repositoryInfo.branch());
+            repositoryInfo.repoUrl(), repositoryInfo.branch());
 
-        this.directoryService.remove(path);
+//        this.directoryService.remove(path);
 
-        final List<String> cloneCommand = cloneCommand(
-            repositoryInfo.branch(),
-            repositoryInfo.repoUrl()
-        );
+        final List<String> cloneCommand =
+            cloneCommand(repositoryInfo.branch(), repositoryInfo.repoUrl());
 
         try {
+            logger.info("Running the command: {} for file: {}", cloneCommand,
+                file);
             final int commandResult =
                 this.commandExecutor.runCommand(cloneCommand, file);
             if (commandResult != 0) {
                 logger.error(
                     "Failed cloning the repository: [{}] for branch: [{}]",
-                    repositoryInfo.repoUrl(),
-                    repositoryInfo.branch());
+                    repositoryInfo.repoUrl(), repositoryInfo.branch());
 
                 throw new CloneRepositoryException(
-                    "Failed cloning the repository",
-                    repositoryInfo.repoUrl(), repositoryInfo.branch());
+                    "Failed cloning the repository", repositoryInfo.repoUrl(),
+                    repositoryInfo.branch());
             }
         } catch (IOException e) {
             throw new CloneRepositoryException(

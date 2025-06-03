@@ -66,6 +66,8 @@ public class PullRequestHandlerImpl implements GithubEventHandler {
 
             final Path workingDirPath = Paths.get(WORKING_DIR_PATH);
 
+            logger.info("Working directory: {}", workingDirPath);
+
             this.directoryService.create(workingDirPath);
 
             final Path projectPath = Paths.get(
@@ -115,7 +117,7 @@ public class PullRequestHandlerImpl implements GithubEventHandler {
                 logger.error("Pipeline step failed. Step: [{}] Project: [{}]",
                     e.getStep(), e.getPath(), e);
             } finally {
-                this.directoryService.remove(projectPath);
+//                this.directoryService.remove(projectPath);
             }
 
             try {

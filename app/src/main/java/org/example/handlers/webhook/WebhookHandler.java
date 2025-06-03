@@ -74,9 +74,15 @@ public class WebhookHandler implements HttpHandler {
 
         final RepositoryInfo repositoryInfo = extractRepositoryInfo(exchange);
 
+        logger.info("Repository info: [{}]", repositoryInfo);
+
         final Runnable task = () -> handler.get().accept(repositoryInfo);
 
+        logger.info("Executing task");
+
         this.executor.execute(task);
+
+        logger.info("Finished executing task");
 
         this.httpExchangeResponder.sendSuccess(exchange);
         logger.info("Webhook handler completed for event: [{}]", githubEvent);
@@ -89,6 +95,7 @@ public class WebhookHandler implements HttpHandler {
 
     private RepositoryInfo extractRepositoryInfo(HttpExchange exchange)
         throws IOException {
+        logger.info("Extracting repository info");
         return this.repositoryInfoParser.parse(JsonParser.extract(exchange));
     }
 }

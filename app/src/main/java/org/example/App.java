@@ -9,6 +9,7 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import org.example.common.env.Environment;
 import org.example.handlers.HttpHandlerFactory;
 import org.example.common.thread.ThreadUtils;
 import org.example.handlers.webhook.WebhookHandler;
@@ -33,6 +34,8 @@ public class App {
 
         final var host = httpServer.getAddress().getHostName();
         final var port = httpServer.getAddress().getPort();
+
+        logger.info("REPO URL: {}", System.getenv("REPO_URL"));
 
         httpServer.createContext("/trigger",
             WEBHOOK_HTTP_HANDLER_FACTORY.create());
